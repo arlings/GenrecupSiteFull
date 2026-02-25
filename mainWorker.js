@@ -70,7 +70,7 @@ export default {
         <section id="season1">
           <h2>Season 1</h2>
           <p>
-            Did you know: In season 1 of Genrecup, the competition was originally called Loficup?! 
+            Did you know that in season 1 of Genrecup, the competition was originally called Loficup?! 
             It was quite a time for the competition, discovering its first rulebook and participants.
           </p>
 
@@ -100,32 +100,40 @@ export default {
             </a>
 
           </div>
-          <img src="https://i.ibb.co/DgtvTVVn/1st-1.png" alt="Genrecup podium" style="padding: 20px;" class="center-image">
+          <img src="https://i.ibb.co/Hf7PkJzp/1st-3.png" alt="Genrecup podium" style="padding-top: 10%;" class="center-image">
         </section>
 
         <section id="season2">
           <h2>Season 2</h2>
           <p>
             Season 2 of Genrecup! After winning Season 1, Grootunknown became co-host 
-            alongside az. The competition expanded and raised the stakes.
+            alongside az. Additionally, the competition expanded, being able to host duos rather than solo participation in this round
           </p>
 
           <div class="archive-grid">
             
             <div class="archive-card">
               <div class="archive-image" style="background-image:url('IMAGE_URL_HERE'); background-color:#ffe9c6;"></div>
-              <p><strong>Winner:</strong> TBD</p>
+              <p><strong>Total streams</strong> </p>
             </div>
 
             <div class="archive-card">
-              <div class="archive-image" style="background-image:url('IMAGE_URL_HERE'); background-color:#d6e4ff;"></div>
-              <p><strong>Total Competitors:</strong> 18 Artists</p>
+              <div class="archive-image" style="background-image:url('https://i.ibb.co/0y2hMN4v/Your-paragraph-text.png'); background-color:#ffd6d6;"></div>
+              <p><strong>Total Competitors</strong></p>
             </div>
 
-            <div class="archive-card">
-              <div class="archive-image" style="background-image:url('IMAGE_URL_HERE'); background-color:#ffd6d6;"></div>
-              <p><strong>Most Streamed Track:</strong> TBD</p>
-            </div>
+            <a href="https://www.bandlab.com/post/1b89a81522f145d9b2a5ad7f2eb781fd_2cfeaee092e0ef1188f66045bd3473c0"
+              target="_blank"
+              rel="noopener noreferrer"
+              class="archive-card link-card">
+
+              <div class="archive-image"
+                  style="background-image:url('https://i.ibb.co/jv52Lbbk/Screenshot-2026-02-25-09-29-52.png'); background-color:#e8ffd6;">
+              </div>
+
+              <p><strong>Top Song: take me with you by @fllse and @vortex_music_man</strong></p>
+
+            </a>
 
           </div>
         </section>
