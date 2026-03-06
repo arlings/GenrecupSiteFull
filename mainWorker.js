@@ -2,6 +2,23 @@ let cachedLeaderboards = {};
 let lastFetchTimes = {};
 const CACHE_DURATION = 30 * 1000; // 30 seconds
 
+function parseCookies(cookieHeader) {
+  const cookies = {};
+  if (!cookieHeader) return cookies;
+
+  cookieHeader.split(';').forEach(part => {
+    const [key, ...rest] = part.trim().split('=');
+    cookies[key] = rest.join('=');
+  });
+
+  return cookies;
+}
+
+function isAdminAuthenticated(request, env) {
+  const cookies = parseCookies(request.headers.get('Cookie'));
+  return cookies.admin_session === env.ADMIN_SESSION_TOKEN;
+}
+
 async function getLeaderboard(sheetName) {
   const now = Date.now();
 
@@ -34,9 +51,46 @@ async function getLeaderboard(sheetName) {
 }
 
 export default {
-  async fetch(request) {
+  async fetch(request, env) {
     const url = new URL(request.url);
+    
     const path = url.pathname;
+
+    if (path === '/admin/login' && request.method === 'POST') {
+      const formData = await request.formData();
+      const username = formData.get('username');
+      const password = formData.get('password');
+
+      if (
+        username === env.ADMIN_USERNAME &&
+        password === env.ADMIN_PASSWORD
+      ) {
+        return new Response(null, {
+          status: 302,
+          headers: {
+            'Location': '/admin',
+            'Set-Cookie': `admin_session=${env.ADMIN_SESSION_TOKEN}; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=86400`
+          }
+        });
+      }
+
+      return new Response(null, {
+        status: 302,
+        headers: {
+          'Location': '/admin?error=1'
+        }
+        });
+      }
+
+    if (path === '/admin/logout' && request.method === 'POST') {
+      return new Response(null, {
+        status: 302,
+        headers: {
+          'Location': '/admin',
+          'Set-Cookie': 'admin_session=; HttpOnly; Secure; SameSite=Strict; Path=/; Max-Age=0'
+        }
+      });
+    }
 
     let pageContent = '<h1>we are the future of music.</h1>';
 
@@ -237,18 +291,63 @@ export default {
     `;
 
     } else if (path === '/contact') {
-      pageContent = `<h1>Contact Us</h1><p>Email arlindzalli2@gmail.com for any queries related to genrecup.org or competition. Reach out to us on our socials and join the community!</p>
+      pageContent = `<h1>Contact Us</h1><p>Email arlindzalli2@gmail.com for any queries related to genrecup.org or competition. Reach out to us on our socials and join the community! Click on the logos to learn more...</p>
       <div class="logo-grid">
         <a href="https://bandlab.com/band/genrecup">
-          <img src="https://i.ibb.co/pB2TGRZc/bandlab.png" width="70" height="70" alt="Bandlab">
+          <img src="https://i.ibb.co/zHF4wgPD/Untitled-design-25.png" width="70" height="70" alt="Bandlab Link">
         </a>
         <a href="https://discord.gg/wAe3gskutb">
-          <img src="https://i.ibb.co/MDQLW9Bt/Untitled-design-23.png" width="57" height="57" alt="Discord">
+          <img src="https://i.ibb.co/MDQLW9Bt/Untitled-design-24.png" width="70" height="70" alt="Discord Link">
         </a>
       </div>`;
     
     } else if (path === '/admin') {
-      pageContent = `<h1>Admin Board</h1><p>Admin-only information...</p>`;
+      const loggedIn = isAdminAuthenticated(request, env);
+      const showError = url.searchParams.get('error') === '1';
+      if (!loggedIn) {
+        pageContent = `
+        <h1>Admin Login</h1>
+        <form method="POST" action="/admin/login" style="display:flex; flex-direction:column; gap:12px; max-width:320px; margin:0 auto;">
+          <input
+            type="text"
+            name="username"
+            placeholder="Enter username"
+            required
+            autocomplete="username"
+            style="padding:10px; border-radius:8px; border:1px solid #b7d7c3; font-size:16px;"
+          >
+          <input
+            type="password"
+            name="password"
+            placeholder="Enter password"
+            required
+            autocomplete="current-password"
+            style="padding:10px; border-radius:8px; border:1px solid #b7d7c3; font-size:16px;"
+          >
+          <button
+            type="submit"
+            style="padding:10px; border:none; border-radius:8px; cursor:pointer; background:#c1ffc6; color:#3b7a54; font-size:16px;"
+          >
+            Login
+          </button>
+          ${showError ? '<p style="color:red; margin:0;">Incorrect username or password.</p>' : ''}
+        </form>
+        `;
+      } else {
+        pageContent = `
+          <h1>Admin Board</h1>
+          <p>Hey github! What's uppppp</p>
+
+          <form method="POST" action="/admin/logout" style="margin-top:20px;">
+            <button
+              type="submit"
+              style="padding:10px; border:none; border-radius:8px; cursor:pointer; background:#ffd6e8; color:#3b7a54; font-size:16px;"
+            >
+              Log out
+            </button>
+          </form>
+        `;
+      }
     }
 
     const html = `
@@ -274,6 +373,7 @@ export default {
     .navbar::before { content: ''; position: absolute; inset: 0; background: url('https://i.ibb.co/gM6QZR8f/Untitled-design-19.png') no-repeat center/cover; opacity: 0.75; z-index: 0; }
     .navbar * { position: relative; z-index: 1; }
     .logo-text { font-size: 24px; text-decoration: none; }
+    .logo-grid { display: grid;grid-template-columns: repeat(2, 1fr);grid-template-rows: repeat(1, 1fr); gap: 24px;}
     .nav-links { display: flex; margin-left: auto; gap: 24px; align-items: center; }
     .nav-links a { font-family: 'IM Fell DW Pica', serif; font-style: italic; color: #3b7a54; text-decoration: none; font-size: 14px; }
     .nav-links a:hover { text-decoration: underline; }
@@ -281,14 +381,16 @@ export default {
     .dropdown-content { display: none; position: absolute; top: 100%; left: 0; background: rgba(193, 255, 198, 0.8); backdrop-filter: blur(5px); min-width: 150px; padding: 8px 0; border-radius: 4px; }
     .dropdown-content a { display: block; padding: 8px 16px; font-family: 'IM Fell DW Pica', serif; font-style: italic; color: #3b7a54; }
     .dropdown:hover .dropdown-content { display: block; }
-    .archive-grid { display: grid;grid-template-columns: repeat(3, 1fr);grid-template-rows: repeat(1, 2fr); gap: 24px; margin-top: 30px; }
-    .archive-card { background: #ffffffaa; border-radius: 12px; padding: 16px; box-shadow: 0 4px 12px rgba(0,0,0,0.08); transition: transform 0.2s ease; height: 5em}
-    .archive-card:hover {transform: translateY(-5px);}
-    .archive-image { width: 100%; height: 100%;border-radius: 8px; background-size: cover; background-position: center;}
-    .archive-text { width: 100%; height: 35%;border-radius: 8px; font-size: 2rem; font-family: 'IM Fell DW Pica';display: flex;align-items: center; justify-content: center;}
-    .archive-subtitle { width: 100%; height: 35%;border-radius: 8px; font-size: 1rem; font-family: 'IM Fell DW Pica'; vertical-align: bottom; opacity: 0.65;}
-    .archive-subtitle-small { width: 100%; height: 35%;border-radius: 8px; font-size: 0.8rem; font-family: 'IM Fell DW Pica'; vertical-align: bottom; opacity: 0.65;}
-    .archive-card p {margin: 0;}
+    .archive-grid {display: grid;grid-template-columns: repeat(3, 1fr);gap: 24px;margin-top: 30px;}
+    .archive-card {background: #ffffffaa;border-radius: 12px;padding: 16px;box-shadow: 0 4px 12px rgba(0,0,0,0.08);transition: transform 0.2s ease;aspect-ratio: 1 / 1;height: auto;overflow: hidden;display: flex;flex-direction: column;gap: 10px;}
+    .archive-card:hover { transform: translateY(-5px); }
+    .archive-image {width: 100%;flex: 1 1 auto;border-radius: 8px;background-size: cover;background-position: center;min-height: 0;}
+    .archive-text {width: 100%;flex: 0 0 auto;border-radius: 8px;font-size: 2rem;font-family: 'IM Fell DW Pica';display: flex;align-items: center;justify-content: center;white-space: nowrap;overflow: hidden;text-overflow: ellipsis;}
+    .archive-subtitle,
+    .archive-subtitle-small {width: 100%;flex: 0 0 auto;border-radius: 8px;font-family: 'IM Fell DW Pica';opacity: 0.65;overflow-wrap: break-word;word-wrap: break-word;text-align: center;}
+    .archive-subtitle {font-size: 1rem;}
+    .archive-subtitle-small {font-size: 0.8rem;}
+    .archive-card p { margin: 0; }
     .center-image { display: block; margin-left: auto; margin-right: auto; width: 90%; margin-top: 30px;}
     .content { padding-top: 100px; text-align: center; display: flex; flex-direction: column; align-items: center; }
     section { width: 90%; max-width: 800px; margin-bottom: 60px; }
