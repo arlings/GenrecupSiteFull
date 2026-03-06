@@ -9,6 +9,10 @@ By Arlind Zalli.
 - Live leaderboard from Google Sheets
 - Contact page
 - Admin page with password protection
+  
+<img width="961" height="420" alt="image" src="https://github.com/user-attachments/assets/87c5a31b-38e3-4b0e-b719-191a1aadfc1a" />
+<img width="940" height="622" alt="image" src="https://github.com/user-attachments/assets/f00f3ac4-bbbb-404f-a326-6989ba99390d" />
+<img width="938" height="577" alt="image" src="https://github.com/user-attachments/assets/a58b616a-076c-4298-9bc7-a80cb3256309" />
 
 ## Tech Stack
 - JavaScript
