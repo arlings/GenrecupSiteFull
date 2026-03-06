@@ -17,7 +17,7 @@ BY ARLIND ZALLI
 - Google Sheets API via OpenSheet
 
 ## Why I Built This
-I wanted to build a real website for a music competition and learn how to connect frontend pages with live data.
+I wanted to build a real website for a music competition and learn how to connect frontend pages with live data. I was originally hosting a music competition, and 2 years later now, I thought it would be cool to apply my learned Javascript skills to help with real issues occuring throughout Season 1 and 2 of hosting my competition, including submission streamlining, and publicity of submissions of winners, all being previously hosted on Bandlab.
 
 ## What I Learned
 - How routing works in a Cloudflare Worker
