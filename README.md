@@ -36,8 +36,8 @@ I faced many challenges, but these three were the main ones that I struggled wit
 - How basic authentication works for admin pages (Using Secret variables in Cloudflare in combination with JS)
 
 ## Future Improvements
-- Better mobile design
-- Stronger admin security
-- More promotion for community music, including a front page that has recent releases
-- Cleaner code structure
+- Better mobile design, make the layout of the site change if a mobile user is accessing it
+- More promotion for community music, including a front page that has recent releases and best releases
 - Better archive visuals
+- Move all image hosting to https://ImageBB.com because it is not blocked by School Board Internet Policies
+- Add administrator features to the site after login is successful
