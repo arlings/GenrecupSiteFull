@@ -1,6 +1,8 @@
 let cachedLeaderboards = {};
 let lastFetchTimes = {};
 const CACHE_DURATION = 30 * 1000; // 30 seconds
+import { getLeaderboard } from "./leaderboard.js";
+import { isAdminAuthenticated } from "./auth.js";
 
 export default {
   async fetch(request, env) {
